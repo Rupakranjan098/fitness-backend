@@ -32,6 +32,25 @@ class AuthController extends Controller
         return response()->json($request->user());
     }
 
+    public function updateProfile(Request $request) {
+        $user = $request->user();
+        $data = $request->validate([
+            'name' => 'nullable|string',
+            'phone' => 'nullable|string',
+            'gender' => 'nullable|string',
+            'dob' => 'nullable|date',
+            'height' => 'nullable|numeric',
+            'weight' => 'nullable|numeric',
+            'age' => 'nullable|integer',
+            'bio' => 'nullable|string',
+            'goal' => 'nullable|string',
+            'nation' => 'nullable|string',
+        ]);
+
+        $user->update($data);
+        return response()->json(['message' => 'Profile updated successfully', 'user' => $user->fresh()]);
+    }
+
     public function login(Request $request) {
         $request->validate(['email' => 'required|email', 'password' => 'required']);
         $user = User::where('email', $request->email)->first();

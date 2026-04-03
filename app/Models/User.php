@@ -31,6 +31,8 @@ class User extends Authenticatable
         'bio',
         'profile_picture',
         'goal',
+        'dob',
+        'nation',
     ];
 
     public function bmiRecords()

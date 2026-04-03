@@ -17,10 +17,19 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
             'age' => 'nullable|integer',
-            'gender' => 'nullable|string'
+            'gender' => 'nullable|string',
+            'height' => 'nullable|numeric',
+            'weight' => 'nullable|numeric',
+            'phone' => 'nullable|string',
+            'bio' => 'nullable|string',
+            'goal' => 'nullable|string',
         ]);
         $user = User::create([...$data, 'password' => Hash::make($data['password'])]);
         return response()->json(['user' => $user, 'token' => $user->createToken('auth_token')->plainTextToken]);
+    }
+
+    public function me(Request $request) {
+        return response()->json($request->user());
     }
 
     public function login(Request $request) {

@@ -25,6 +25,12 @@ class User extends Authenticatable
         'password',
         'age',
         'gender',
+        'height',
+        'weight',
+        'phone',
+        'bio',
+        'profile_picture',
+        'goal',
     ];
 
     public function bmiRecords()

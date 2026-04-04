@@ -42,7 +42,7 @@ class AuthController extends Controller
             'height' => 'nullable|numeric',
             'weight' => 'nullable|numeric',
             'age' => 'nullable|integer',
-            'bio' => 'nullable|string',
+            // 'bio' => 'nullable|string',
             'goal' => 'nullable|string',
             'nation' => 'nullable|string',
         ]);

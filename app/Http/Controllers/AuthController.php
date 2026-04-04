@@ -25,6 +25,33 @@ class AuthController extends Controller
             'goal' => 'nullable|string',
         ]);
         $user = User::create([...$data, 'password' => Hash::make($data['password'])]);
+        
+        $otp = rand(100000, 999999);
+        $user->otp = $otp;
+        $user->otp_expires_at = now()->addMinutes(10);
+        $user->save();
+
+        \Illuminate\Support\Facades\Log::info("OTP for {$user->email} is {$otp}");
+
+        return response()->json(['message' => 'OTP sent to email', 'email' => $user->email]);
+    }
+
+    public function verifyOtp(Request $request) {
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required|string',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user || $user->otp !== $request->otp || now()->greaterThan($user->otp_expires_at)) {
+            throw ValidationException::withMessages(['otp' => ['Invalid or expired OTP.']]);
+        }
+
+        $user->otp = null;
+        $user->otp_expires_at = null;
+        $user->email_verified_at = now();
+        $user->save();
+
         return response()->json(['user' => $user, 'token' => $user->createToken('auth_token')->plainTextToken]);
     }
 

@@ -10,6 +10,7 @@ use App\Http\Controllers\NutritionLogController;
 use App\Http\Controllers\DietPlanController;
 
 Route::post('/register', [AuthController::class , 'register']);
+Route::post('/verify-otp', [AuthController::class , 'verifyOtp']);
 Route::post('/login', [AuthController::class , 'login']);
 Route::post('/guest-login', [AuthController::class , 'guestLogin']);
 

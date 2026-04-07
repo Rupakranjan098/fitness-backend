@@ -25,19 +25,24 @@ class AuthController extends Controller
             'bio' => 'nullable|string',
             'goal' => 'nullable|string',
         ]);
-        $user = User::create([...$data, 'password' => Hash::make($data['password'])]);
-        
-        $otp = rand(100000, 999999);
-        $user->otp = $otp;
-        $user->otp_expires_at = now()->addMinutes(10);
-        $user->save();
 
-        \Illuminate\Support\Facades\Log::info("OTP for {$user->email} is {$otp}");
+        $otp = rand(100000, 999999);
+        $data['password'] = Hash::make($data['password']);
+        $data['otp'] = $otp;
+
+        // Store data in cache for 10 minutes instead of inserting into DB
+        \Illuminate\Support\Facades\Cache::put('pending_user_' . $data['email'], $data, now()->addMinutes(10));
+
+        \Illuminate\Support\Facades\Log::info("OTP for {$data['email']} is {$otp}");
         
         // Send Email via PHPMailer
-        MailService::sendOtp($user->email, $otp);
+        $sent = MailService::sendOtp($data['email'], $otp);
 
-        return response()->json(['message' => 'OTP sent to email', 'email' => $user->email]);
+        if (!$sent) {
+            return response()->json(['message' => 'Failed to send verification email. Please check your SMTP settings.'], 500);
+        }
+
+        return response()->json(['message' => 'OTP sent to email', 'email' => $data['email']]);
     }
 
     public function verifyOtp(Request $request) {
@@ -46,33 +51,37 @@ class AuthController extends Controller
             'otp' => 'required|string',
         ]);
 
-        $user = User::where('email', $request->email)->first();
-        if (!$user || $user->otp !== $request->otp || now()->greaterThan($user->otp_expires_at)) {
-            throw ValidationException::withMessages(['otp' => ['Invalid or expired OTP.']]);
+        $cachedData = \Illuminate\Support\Facades\Cache::get('pending_user_' . $request->email);
+
+        if (!$cachedData || $cachedData['otp'] != $request->otp) {
+             throw ValidationException::withMessages(['otp' => ['Invalid or expired OTP.']]);
         }
 
-        $user->otp = null;
-        $user->otp_expires_at = null;
+        // OTP is correct - Now we "Insert" the data
+        $user = User::create($cachedData);
         $user->email_verified_at = now();
         $user->save();
+
+        // Clear cache
+        \Illuminate\Support\Facades\Cache::forget('pending_user_' . $request->email);
 
         return response()->json(['user' => $user, 'token' => $user->createToken('auth_token')->plainTextToken]);
     }
 
     public function resendOtp(Request $request) {
         $request->validate(['email' => 'required|email']);
-        $user = User::where('email', $request->email)->first();
         
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 44);
+        $cachedData = \Illuminate\Support\Facades\Cache::get('pending_user_' . $request->email);
+        
+        if (!$cachedData) {
+            return response()->json(['message' => 'No pending registration found for this email. Please register again.'], 404);
         }
 
         $otp = rand(100000, 999999);
-        $user->otp = $otp;
-        $user->otp_expires_at = now()->addMinutes(10);
-        $user->save();
+        $cachedData['otp'] = $otp;
+        \Illuminate\Support\Facades\Cache::put('pending_user_' . $request->email, $cachedData, now()->addMinutes(10));
 
-        MailService::sendOtp($user->email, $otp);
+        MailService::sendOtp($request->email, $otp);
 
         return response()->json(['message' => 'New OTP sent to email']);
     }

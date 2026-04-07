@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMail;
 
 class AuthController extends Controller
 {
@@ -32,6 +34,9 @@ class AuthController extends Controller
         $user->save();
 
         \Illuminate\Support\Facades\Log::info("OTP for {$user->email} is {$otp}");
+        
+        // Send Email via SMTP
+        Mail::to($user->email)->send(new OtpMail($otp));
 
         return response()->json(['message' => 'OTP sent to email', 'email' => $user->email]);
     }

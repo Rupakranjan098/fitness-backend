@@ -24,7 +24,14 @@ class AuthController extends Controller
             'phone' => 'nullable|string',
             'bio' => 'nullable|string',
             'goal' => 'nullable|string',
+            'profile_picture' => 'nullable|string', // Base64 string
         ]);
+
+        // Handle profile picture
+        if (!empty($data['profile_picture']) && strpos($data['profile_picture'], 'data:image') === 0) {
+            $image_service = $this->saveBase64Image($data['profile_picture']);
+            $data['profile_picture'] = $image_service;
+        }
 
         $otp = rand(100000, 999999);
         $data['password'] = Hash::make($data['password']);
@@ -43,6 +50,21 @@ class AuthController extends Controller
         }
 
         return response()->json(['message' => 'OTP sent to email', 'email' => $data['email']]);
+    }
+
+    private function saveBase64Image($base64String) {
+        try {
+            $format = explode(',', $base64String);
+            if (count($format) < 2) return null;
+            
+            $image = base64_decode($format[1]);
+            $fileName = Str::random(20) . '.png';
+            \Illuminate\Support\Facades\Storage::disk('public')->put('profiles/' . $fileName, $image);
+            return '/storage/profiles/' . $fileName;
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Image upload error: " . $e->getMessage());
+            return null;
+        }
     }
 
     public function verifyOtp(Request $request) {
@@ -100,10 +122,14 @@ class AuthController extends Controller
             'height' => 'nullable|numeric',
             'weight' => 'nullable|numeric',
             'age' => 'nullable|integer',
-            // 'bio' => 'nullable|string',
             'goal' => 'nullable|string',
             'nation' => 'nullable|string',
+            'profile_picture' => 'nullable|string',
         ]);
+
+        if (!empty($data['profile_picture']) && strpos($data['profile_picture'], 'data:image') === 0) {
+            $data['profile_picture'] = $this->saveBase64Image($data['profile_picture']);
+        }
 
         $user->update($data);
         return response()->json(['message' => 'Profile updated successfully', 'user' => $user->fresh()]);

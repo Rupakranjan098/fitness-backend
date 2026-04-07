@@ -45,6 +45,26 @@ class User extends Authenticatable
         return $this->hasMany(NutritionLog::class);
     }
 
+    public function sleepLogs()
+    {
+        return $this->hasMany(SleepLog::class);
+    }
+
+    public function workoutLogs()
+    {
+        return $this->hasMany(WorkoutLog::class);
+    }
+
+    public function wellnessLogs()
+    {
+        return $this->hasMany(WellnessLog::class);
+    }
+
+    public function outdoorLogs()
+    {
+        return $this->hasMany(OutdoorLog::class);
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

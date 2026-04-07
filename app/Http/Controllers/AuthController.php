@@ -60,6 +60,24 @@ class AuthController extends Controller
         return response()->json(['user' => $user, 'token' => $user->createToken('auth_token')->plainTextToken]);
     }
 
+    public function resendOtp(Request $request) {
+        $request->validate(['email' => 'required|email']);
+        $user = User::where('email', $request->email)->first();
+        
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 44);
+        }
+
+        $otp = rand(100000, 999999);
+        $user->otp = $otp;
+        $user->otp_expires_at = now()->addMinutes(10);
+        $user->save();
+
+        Mail::to($user->email)->send(new OtpMail($otp));
+
+        return response()->json(['message' => 'New OTP sent to email']);
+    }
+
     public function me(Request $request) {
         return response()->json($request->user());
     }
@@ -89,6 +107,15 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages(['email' => ['Invalid credentials.']]);
         }
+
+        if (!$user->email_verified_at) {
+            return response()->json([
+                'message' => 'Email not verified. Please verify your email first.',
+                'email' => $user->email,
+                'verified' => false
+            ], 403);
+        }
+
         return response()->json(['user' => $user, 'token' => $user->createToken('auth_token')->plainTextToken]);
     }
 

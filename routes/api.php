@@ -11,6 +11,7 @@ use App\Http\Controllers\SleepLogController;
 use App\Http\Controllers\WorkoutLogController;
 use App\Http\Controllers\WellnessLogController;
 use App\Http\Controllers\OutdoorLogController;
+use App\Http\Controllers\DashboardController;
 
 Route::post('/register', [AuthController::class , 'register']);
 Route::post('/verify-otp', [AuthController::class , 'verifyOtp']);
@@ -21,6 +22,8 @@ Route::post('/guest-login', [AuthController::class , 'guestLogin']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/update-profile', [AuthController::class, 'updateProfile']);
+    Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::post('/hydration-logs', [DashboardController::class, 'updateHydration']);
     Route::get('/diet-plan', [DietPlanController::class, 'getPlan']);
     Route::apiResource('bmi-records', BmiRecordController::class)->only(['index', 'store']);
     Route::apiResource('nutrition-logs', NutritionLogController::class)->only(['index', 'store']);

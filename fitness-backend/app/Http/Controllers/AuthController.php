@@ -125,6 +125,16 @@ class AuthController extends Controller
             'goal' => 'nullable|string',
             'nation' => 'nullable|string',
             'profile_picture' => 'nullable|string',
+            'fitness_level' => 'nullable|string',
+            'training_location' => 'nullable|string',
+            'equipment_type' => 'nullable|string',
+            'equipment' => 'nullable|array',
+            'areas_of_concern' => 'nullable|array',
+            'days_per_week' => 'nullable|integer',
+            'session_duration' => 'nullable|integer',
+            'include_warmup' => 'nullable|boolean',
+            'include_cooldown' => 'nullable|boolean',
+            'include_cardio' => 'nullable|boolean',
         ]);
 
         if (!empty($data['profile_picture']) && strpos($data['profile_picture'], 'data:image') === 0) {

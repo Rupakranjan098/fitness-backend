@@ -103,12 +103,12 @@ export default function RegisterScreen() {
       const response = await fetch(`${BASE_URL}/register`, {
         method: 'POST',
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          name: name.trim(), 
-          email: email.trim().toLowerCase(), 
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim().toLowerCase(),
           phone: phone.trim(),
-          password, 
-          age: ageNum, 
+          password,
+          age: ageNum,
           gender,
           height: parseFloat(height),
           weight: parseFloat(weight),
@@ -152,7 +152,7 @@ export default function RegisterScreen() {
       <SafeAreaView style={styles.safe}>
         <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-            
+
             <View style={styles.header}>
               <TouchableOpacity onPress={pickImage} activeOpacity={0.9} style={styles.avatarWrapper}>
                 <LinearGradient colors={[primary, primaryDeep]} style={styles.logoCircle} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
@@ -174,7 +174,7 @@ export default function RegisterScreen() {
             </View>
 
             <View style={[styles.card, { backgroundColor: cardBg, borderColor: inputBorder, borderWidth: isDark ? 1 : 0 }]}>
-              
+
               <Text style={[styles.label, { color: textSecondary }]}>Full Name</Text>
               <View style={[styles.inputRow, { backgroundColor: inputBg, borderColor: inputBorder }]}>
                 <IconSymbol name="person.fill" size={17} color={primary} style={styles.inputIcon} />
@@ -282,7 +282,7 @@ export default function RegisterScreen() {
       <Modal visible={genderModalVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={[styles.modalSheet, { backgroundColor: isDark ? '#1e293b' : '#ffffff' }]}>
-            <View style={styles.modalHeader}><Text style={[styles.modalTitle, { color: textPrimary }]}>Gender</Text><TouchableOpacity onPress={() => setGenderModalVisible(false)}><Text style={{color:primary, fontWeight:'700'}}>Close</Text></TouchableOpacity></View>
+            <View style={styles.modalHeader}><Text style={[styles.modalTitle, { color: textPrimary }]}>Gender</Text><TouchableOpacity onPress={() => setGenderModalVisible(false)}><Text style={{ color: primary, fontWeight: '700' }}>Close</Text></TouchableOpacity></View>
             <FlatList data={GENDER_OPTIONS} keyExtractor={item => item.value} renderItem={({ item }) => (
               <TouchableOpacity style={styles.modalItem} onPress={() => { setGender(item.value); setGenderModalVisible(false); }}>
                 <Text style={{ fontSize: 16, color: textPrimary }}>{item.icon}  {item.label}</Text>
@@ -296,7 +296,7 @@ export default function RegisterScreen() {
       <Modal visible={goalModalVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={[styles.modalSheet, { backgroundColor: isDark ? '#1e293b' : '#ffffff' }]}>
-            <View style={styles.modalHeader}><Text style={[styles.modalTitle, { color: textPrimary }]}>Fitness Goal</Text><TouchableOpacity onPress={() => setGoalModalVisible(false)}><Text style={{color:primary, fontWeight:'700'}}>Close</Text></TouchableOpacity></View>
+            <View style={styles.modalHeader}><Text style={[styles.modalTitle, { color: textPrimary }]}>Fitness Goal</Text><TouchableOpacity onPress={() => setGoalModalVisible(false)}><Text style={{ color: primary, fontWeight: '700' }}>Close</Text></TouchableOpacity></View>
             <FlatList data={GOAL_OPTIONS} keyExtractor={item => item.value} renderItem={({ item }) => (
               <TouchableOpacity style={styles.modalItem} onPress={() => { setGoal(item.value); setGoalModalVisible(false); }}>
                 <Text style={{ fontSize: 16, color: textPrimary }}>{item.icon}  {item.label}</Text>

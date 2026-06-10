@@ -33,6 +33,16 @@ class User extends Authenticatable
         'goal',
         'dob',
         'nation',
+        'fitness_level',
+        'training_location',
+        'equipment_type',
+        'equipment',
+        'areas_of_concern',
+        'days_per_week',
+        'session_duration',
+        'include_warmup',
+        'include_cooldown',
+        'include_cardio',
     ];
 
     public function bmiRecords()
@@ -90,6 +100,13 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'equipment' => 'array',
+            'areas_of_concern' => 'array',
+            'days_per_week' => 'integer',
+            'session_duration' => 'integer',
+            'include_warmup' => 'boolean',
+            'include_cooldown' => 'boolean',
+            'include_cardio' => 'boolean',
         ];
     }
 }

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  ScrollView, 
-  TouchableOpacity, 
-  Platform, 
-  useColorScheme, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Platform,
+  useColorScheme,
   Appearance,
   Image,
   RefreshControl,
@@ -24,7 +24,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
-  
+
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -42,7 +42,7 @@ export default function HomeScreen() {
       const response = await fetch(`${BASE_URL}/dashboard`, {
         headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
@@ -76,10 +76,10 @@ export default function HomeScreen() {
 
   const handleHydrationUpdate = async (newAmount: number) => {
     if (newAmount < 0 || newAmount > 20) return;
-    
+
     // Optimistic UI update
     setWaterGlasses(newAmount);
-    
+
     try {
       const token = await getToken();
       await fetch(`${BASE_URL}/hydration-logs`, {
@@ -101,8 +101,8 @@ export default function HomeScreen() {
   };
 
   // ─── Dynamic theme values (BLUE Accent to match Login/Register) ───
-  const bgGradient = isDark 
-    ? (['#000000', '#0a0a0a', '#111827'] as const) 
+  const bgGradient = isDark
+    ? (['#000000', '#0a0a0a', '#111827'] as const)
     : (['#f8fafc', '#f1f5f9', '#e2e8f0'] as const);
   const primary = isDark ? '#84cc16' : '#65a30d';
   const primaryDeep = isDark ? '#4d7c0f' : '#3f6212';
@@ -126,16 +126,16 @@ export default function HomeScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient colors={bgGradient as any} style={StyleSheet.absoluteFillObject} />
-      
+
       <SafeAreaView style={styles.safe}>
-        <ScrollView 
-          contentContainerStyle={styles.scrollContent} 
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={primary} />
           }
         >
-          
+
           {/* Header Section */}
           <View style={styles.header}>
             <View>
@@ -148,8 +148,8 @@ export default function HomeScreen() {
           </View>
 
           {/* Main Stats Card (Glassmorphic) */}
-          <LinearGradient 
-            colors={[primary, primaryDeep]} 
+          <LinearGradient
+            colors={[primary, primaryDeep]}
             style={styles.mainStatsCard}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
@@ -237,7 +237,7 @@ export default function HomeScreen() {
               <TouchableOpacity style={styles.controlBtn} onPress={() => handleHydrationUpdate(waterGlasses - 1)}>
                 <IconSymbol name="minus" size={16} color={primary} />
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.controlBtn, {backgroundColor: primary}]} onPress={() => handleHydrationUpdate(waterGlasses + 1)}>
+              <TouchableOpacity style={[styles.controlBtn, { backgroundColor: primary }]} onPress={() => handleHydrationUpdate(waterGlasses + 1)}>
                 <IconSymbol name="plus" size={16} color="#ffffff" />
               </TouchableOpacity>
             </View>
@@ -259,6 +259,18 @@ export default function HomeScreen() {
             <IconSymbol name="chevron.right" size={18} color={textSecondary} />
           </TouchableOpacity>
 
+          {/* Today's Workout Plan (Links to new UI) */}
+          <TouchableOpacity style={[styles.activityCard, { backgroundColor: cardBg, borderColor: cardBorder }]} onPress={() => router.push('/workout-detail' as any)}>
+            <LinearGradient colors={['#4ade80', '#16a34a']} style={styles.activityIconBox}>
+              <IconSymbol name="bolt.fill" size={20} color="#ffffff" />
+            </LinearGradient>
+            <View style={styles.activityInfo}>
+              <Text style={[styles.activityName, { color: textPrimary }]}>Today's Workout Plan</Text>
+              <Text style={[styles.activitySub, { color: textSecondary }]}>Chest, Legs & Core • 28 Min</Text>
+            </View>
+            <IconSymbol name="chevron.right" size={18} color={textSecondary} />
+          </TouchableOpacity>
+
         </ScrollView>
       </SafeAreaView>
     </View>
@@ -271,21 +283,21 @@ const styles = StyleSheet.create({
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   loadingText: { marginTop: 16, fontSize: 15, fontWeight: '600' },
   scrollContent: { paddingHorizontal: 22, paddingTop: 16, paddingBottom: 40 },
-  header: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
-    marginBottom: 28 
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 28
   },
   greeting: { fontSize: 13, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 },
   userName: { fontSize: 24, fontWeight: '800', letterSpacing: -0.5 },
-  headerBtn: { 
-    width: 44, height: 44, borderRadius: 22, 
+  headerBtn: {
+    width: 44, height: 44, borderRadius: 22,
     justifyContent: 'center', alignItems: 'center',
-    borderWidth: 1, 
+    borderWidth: 1,
   },
-  mainStatsCard: { 
-    borderRadius: 28, padding: 24, 
+  mainStatsCard: {
+    borderRadius: 28, padding: 24,
     flexDirection: 'row', justifyContent: 'space-between',
     alignItems: 'center', marginBottom: 30,
     shadowOffset: { width: 0, height: 10 },
@@ -297,27 +309,27 @@ const styles = StyleSheet.create({
   statDivider: { width: 1, height: 35, backgroundColor: 'rgba(255,255,255,0.2)' },
   sectionHeader: { marginBottom: 16 },
   sectionTitle: { fontSize: 18, fontWeight: '800' },
-  grid: { 
-    flexDirection: 'row', flexWrap: 'wrap', 
-    justifyContent: 'space-between', marginBottom: 20 
+  grid: {
+    flexDirection: 'row', flexWrap: 'wrap',
+    justifyContent: 'space-between', marginBottom: 20
   },
-  gridCard: { 
+  gridCard: {
     width: '48%', borderRadius: 24, padding: 16,
     alignItems: 'center', marginBottom: 16,
     borderWidth: 1,
   },
-  gridIconBox: { 
+  gridIconBox: {
     width: 48, height: 48, borderRadius: 16,
     justifyContent: 'center', alignItems: 'center',
     marginBottom: 12,
   },
   gridLabel: { fontSize: 14, fontWeight: '700' },
-  activityCard: { 
+  activityCard: {
     flexDirection: 'row', alignItems: 'center',
     borderRadius: 22, padding: 16, marginBottom: 12,
     borderWidth: 1,
   },
-  activityIconBox: { 
+  activityIconBox: {
     width: 46, height: 46, borderRadius: 14,
     justifyContent: 'center', alignItems: 'center',
     marginRight: 16,
@@ -326,8 +338,8 @@ const styles = StyleSheet.create({
   activityName: { fontSize: 15, fontWeight: '700', marginBottom: 2 },
   activitySub: { fontSize: 12, fontWeight: '500' },
   waterControls: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  controlBtn: { 
-    width: 32, height: 32, borderRadius: 16, 
+  controlBtn: {
+    width: 32, height: 32, borderRadius: 16,
     justifyContent: 'center', alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.1)',
   },

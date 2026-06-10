@@ -4,37 +4,39 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 export default function GymScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
-  
+
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
 
   const textPrimary = isDark ? '#f1f5f9' : '#111827';
   const textSecondary = isDark ? '#94a3b8' : '#6b7280';
   const cardBg = isDark ? 'rgba(255,255,255,0.06)' : '#ffffff';
   const cardBorder = isDark ? 'rgba(255,255,255,0.1)' : '#e2e8f0';
-  
+  const accent = '#4ade80';
+
   // Custom Icon component for levels
-  const LevelIcon = ({ level }: { level: string }) => {
+  const LevelIcon = ({ level, isSelected }: { level: string, isSelected: boolean }) => {
     if (level === 'Beginner') {
       return (
-        <View style={[styles.iconContainer, { backgroundColor: 'rgba(132, 204, 22, 0.15)' }]}>
-          <IconSymbol name="figure.walk" size={24} color="#84cc16" />
+        <View style={[styles.iconContainer, { backgroundColor: isSelected ? 'rgba(74, 222, 128, 0.2)' : 'rgba(132, 204, 22, 0.15)' }]}>
+          <IconSymbol name="figure.walk" size={24} color={isSelected ? accent : "#84cc16"} />
         </View>
       );
     } else if (level === 'Intermediate') {
       return (
-        <View style={[styles.iconContainer, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
-          <IconSymbol name="figure.run" size={24} color="#3b82f6" />
+        <View style={[styles.iconContainer, { backgroundColor: isSelected ? 'rgba(74, 222, 128, 0.2)' : 'rgba(59, 130, 246, 0.15)' }]}>
+          <IconSymbol name="figure.run" size={24} color={isSelected ? accent : "#3b82f6"} />
         </View>
       );
     } else {
       return (
-        <View style={[styles.iconContainer, { backgroundColor: 'rgba(234, 179, 8, 0.15)' }]}>
-          <IconSymbol name="flame.fill" size={24} color="#eab308" />
+        <View style={[styles.iconContainer, { backgroundColor: isSelected ? 'rgba(74, 222, 128, 0.2)' : 'rgba(234, 179, 8, 0.15)' }]}>
+          <IconSymbol name="flame.fill" size={24} color={isSelected ? accent : "#eab308"} />
         </View>
       );
     }
@@ -61,52 +63,71 @@ export default function GymScreen() {
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: isDark ? '#000000' : '#f8fafc' }]}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: textPrimary }]}>Fitness Level</Text>
+        <View style={styles.titleContainer}>
+          <View style={styles.decorativeDashContainer}>
+            <View style={[styles.decorativeDash, { backgroundColor: accent }]} />
+            <View style={[styles.decorativeDash, { backgroundColor: accent, height: 8 }]} />
+          </View>
+          <Text style={[styles.title, { color: textPrimary }]}>Fitness <Text style={{ color: accent }}>Level</Text></Text>
+          <View style={[styles.decorativeDashContainer, { transform: [{ scaleX: -1 }] }]}>
+            <View style={[styles.decorativeDash, { backgroundColor: accent }]} />
+            <View style={[styles.decorativeDash, { backgroundColor: accent, height: 8 }]} />
+          </View>
+        </View>
         <Text style={[styles.subtitle, { color: textSecondary }]}>
           This affects weight recommendations and exercise selection
         </Text>
       </View>
 
       <View style={styles.optionsContainer}>
-        {LEVELS.map((level) => (
-          <TouchableOpacity
-            key={level.id}
-            style={[
-              styles.optionCard,
-              { backgroundColor: cardBg, borderColor: selectedLevel === level.id ? '#84cc16' : cardBorder },
-              selectedLevel === level.id && { borderWidth: 2 }
-            ]}
-            onPress={() => setSelectedLevel(level.id)}
-            activeOpacity={0.7}
-          >
-            <LevelIcon level={level.id} />
-            <View style={styles.optionTextContainer}>
-              <Text style={[styles.optionTitle, { color: textPrimary }]}>{level.title}</Text>
-              <Text style={[styles.optionDesc, { color: textSecondary }]}>{level.description}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
+        {LEVELS.map((level) => {
+          const isSelected = selectedLevel === level.id;
+          return (
+            <TouchableOpacity
+              key={level.id}
+              style={[
+                styles.optionCard,
+                { backgroundColor: cardBg, borderColor: isSelected ? accent : cardBorder },
+                isSelected && { borderWidth: 2 }
+              ]}
+              onPress={() => setSelectedLevel(level.id)}
+              activeOpacity={0.7}
+            >
+              <LevelIcon level={level.id} isSelected={isSelected} />
+              <View style={styles.optionTextContainer}>
+                <Text style={[styles.optionTitle, { color: textPrimary }]}>{level.title}</Text>
+                <Text style={[styles.optionDesc, { color: textSecondary }]}>{level.description}</Text>
+              </View>
+              {isSelected && (
+                <View style={styles.checkIcon}>
+                  <MaterialCommunityIcons name="check-circle" size={24} color={accent} />
+                </View>
+              )}
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
       <View style={styles.footer}>
-        <TouchableOpacity 
-          style={[styles.btn, { backgroundColor: 'rgba(255,255,255,0.08)', borderWidth: 1, borderColor: cardBorder }]} 
+        <TouchableOpacity
+          style={[styles.btn, styles.btnBack, { borderColor: accent }]}
           onPress={() => router.back()}
         >
-          <Text style={[styles.btnText, { color: '#eab308' }]}>Back</Text>
+          <MaterialCommunityIcons name="arrow-left" size={20} color={textPrimary} style={{ marginRight: 8 }} />
+          <Text style={[styles.btnText, { color: textPrimary }]}>Back</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[styles.btn, { backgroundColor: '#84cc16' }]} 
+
+        <TouchableOpacity
+          style={[styles.btn, styles.btnNext, { backgroundColor: accent }, !selectedLevel && { opacity: 0.5 }]}
           onPress={() => {
             if (selectedLevel) {
-              // Proceed to next screen or update user profile
-              router.back(); // For now just go back
+              router.push({ pathname: '/equipment', params: { fitnessLevel: selectedLevel } });
             }
           }}
           disabled={!selectedLevel}
         >
-          <Text style={[styles.btnText, { color: '#000000' }, !selectedLevel && { opacity: 0.5 }]}>Next</Text>
+          <Text style={[styles.btnText, { color: '#000000', marginRight: 8 }]}>Next</Text>
+          <MaterialCommunityIcons name="arrow-right" size={20} color="#000000" />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -123,10 +144,29 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginBottom: 40,
   },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 12,
+    textAlign: 'center',
+    marginHorizontal: 10,
+  },
+  decorativeDashContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    transform: [{ skewX: '-20deg' }],
+  },
+  decorativeDash: {
+    width: 6,
+    height: 12,
+    borderRadius: 2,
+    opacity: 0.8,
   },
   subtitle: {
     fontSize: 15,
@@ -152,19 +192,6 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     marginRight: 16,
   },
-  bar: {
-    width: 6,
-    borderRadius: 3,
-  },
-  barShort: {
-    height: 12,
-  },
-  barMedium: {
-    height: 18,
-  },
-  barTall: {
-    height: 24,
-  },
   optionTextContainer: {
     flex: 1,
   },
@@ -177,6 +204,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
+  checkIcon: {
+    marginLeft: 10,
+  },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -184,16 +214,24 @@ const styles = StyleSheet.create({
     bottom: 40,
     left: 24,
     right: 24,
+    gap: 16,
   },
   btn: {
+    flex: 1,
     paddingVertical: 16,
-    paddingHorizontal: 40,
-    borderRadius: 30,
-    minWidth: 120,
+    borderRadius: 16,
     alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  btnBack: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+  },
+  btnNext: {
   },
   btnText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   }
 });
